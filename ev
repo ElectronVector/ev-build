@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Create a unique container name based on the current folder. Replace slashes with underscores.
+container_name=$(pwd)
+container_name="${container_name/\//}"
+container_name="${container_name//\//_}"
+
+# Force a rebuild of the container.
+if [[ $1 == "--build" ]]; then
+    docker build -t ${container_name} .
+    shift
+fi
+
+# Build the Docker image if it doesn't exist.
+if ! docker image ls | grep "\b$container_name\b" > /dev/null ; then
+    docker build -t ${container_name} .
+fi
+
+# Open a terminal into the container.
+if [[ $1 == "--term" ]]; then
+    if [[ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]] || [[ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]]; then
+        # On Windows we need to run with winpty.
+        winpty docker run --mount type=bind,source="$(pwd)",target=/app -it ${container_name} bash
+    else
+        docker run --mount type=bind,source="$(pwd)",target=/app -it ${container_name} bash
+    fi
+    exit
+fi
+
+# Run the command with the Docker image.
+docker run --mount type=bind,source="$(pwd)",target=/app ${container_name} "$@"
