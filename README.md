@@ -37,6 +37,17 @@ ev
 ev.bat
 ```
 
+## Creating your environment
+
+To create the specific environment you need for your application, you need to modify the **Dockerfile** to install your dependencies. This is done by modifying the `RUN` statements to install new tools. The example Dockerfile included in this repository installs GCC and Ceedling (and Ruby), but you won't necessarily need those.
+
+Change these lines in the Docker file, or add new ones:
+
+```dockerfile
+RUN apt-get update && apt-get install -y ruby gcc
+RUN gem install ceedling
+```
+
 ## Forcing a rebuild
 
 You can force ev to rebuild the image by passing `--build` before any arguments:
