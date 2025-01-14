@@ -4,6 +4,7 @@
 container_name=$(pwd)
 container_name="${container_name/\//}"
 container_name="${container_name//\//_}"
+container_name="$(echo $container_name | tr '[:upper:]' '[:lower:]')"
 
 # Force a rebuild of the container.
 if [[ $1 == "--build" ]]; then
